@@ -3,7 +3,6 @@ import db from "../config/Database.js"
 
 const { DataTypes } = Sequelize
 
-
 const Roles = db.define(
 	"roles",
 	{
@@ -19,7 +18,8 @@ const Roles = db.define(
 				notEmpty: true
 			}
 		}
-	}, {
+	},
+	{
 		freezeTableName: true,
 		createdAt: "created_at",
 		updatedAt: "updated_at"

@@ -1,18 +1,22 @@
-const payload = (status, success, code, errorMessage, content, res) => {
-  if (status === "OK") {
+const payload = (code, success, message, data, res) => {
+  if (success === true) {
     return res.status(code).json({
-      success: success,
-      status: status,
-      message: errorMessage,
-      content: content,
+      meta: {
+        code: code,
+        success: success,
+        message: message,
+      },
+      data: data,
     });
   }
 
   return res.status(code).json({
-    success: success,
-    status: status,
-    message: errorMessage,
+    meta: {
+      code: code,
+      success: success,
+      message: message,
+    },
   });
-};
+}
 
 export default payload;
