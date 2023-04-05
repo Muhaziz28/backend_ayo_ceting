@@ -28,6 +28,7 @@ export const register = async (req, res) => {
             email: email,
             role_id: role_id
         })
+
         return payload(200, true, "User created", user, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
@@ -62,9 +63,12 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+        if (!req.headers.authorization) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
         const token = req.headers.authorization.split(" ")[1]
         if (!token) {
-            return res.status(401).json({ message: 'Anda belum login' });
+            return payload(401, false, "Unauthorized", null, res)
         }
         console.log(`token: ${token}`)
         jwt.verify(token, process.env.JWTPRIVATEKEY)
