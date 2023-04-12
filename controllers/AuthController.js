@@ -38,23 +38,33 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body
+
         const user = await Users.findOne({
-            email: email
+            where: {
+                email: email
+            }
         })
+
+        console.log(user)
 
         if (!user) {
             return payload(400, false, "Invalid email or password", null, res)
         }
+
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
             return payload(400, false, "Invalid email or password", null, res)
         }
         const token = jwt.sign({ id: user.id }, process.env.JWTPRIVATEKEY)
         res.cookie('token', token, { httpOnly: true });
-        return payload(200, true, "Login success", {
-            token: token,
-            user: user
-        }, res)
+
+        return payload(
+            200, true, "Login success",
+            {
+                token: token,
+                user: user
+            }
+            , res)
 
     } catch (err) {
         return payload(500, false, err.message, null, res)
