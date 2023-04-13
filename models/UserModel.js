@@ -40,6 +40,10 @@ const Users = db.define(
             validate: {
                 notEmpty: true
             }
+        },
+        puskesmas_id: {
+            type: DataTypes.STRING,
+            allowNull: false,
         }
     },
     {

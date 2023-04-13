@@ -3,6 +3,7 @@ import payload from "../response_format.js"
 import { auth } from "../middleware/auth.js"
 import Roles from "../models/RolesModel.js"
 import jwt from "jsonwebtoken"
+import axios from "axios"
 
 export const getMe = async (req, res) => {
     try {
@@ -24,10 +25,13 @@ export const getMe = async (req, res) => {
             include: [
                 {
                     model: Roles,
-                    attributes: ["role_name"]
+                    attributes: ["id", "role_name"]
                 }
             ]
         })
+
+        const puskesmas = await axios.get(`http://103.141.74.123:81/api/v1/puskesmas/detail/${user.puskesmas_id}`)
+        user.dataValues.puskesmas = puskesmas.data.data
         return payload(200, true, "User found", user, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
