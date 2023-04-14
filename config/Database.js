@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 const db = new Sequelize("ayo_ceting", "root", "", {
-	host: "localhost",
+	host: "127.0.0.1",
 	dialect: "mysql"
 })
 

@@ -39,20 +39,15 @@ export const register = async (req, res) => {
             },
             attributes: ["id", "role_name"]
         })
-        const token = jwt.sign({ id: user.id }, process.env.JWTPRIVATEKEY)
-        res.cookie('token', token, { httpOnly: true });
 
         const result = {
-            token: token,
-            user: {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                role_id: user.role_id,
-                role: role,
-                puskesmas_id: user.puskesmas_id,
-                puskesmas: puskesmas.data.data
-            }
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role_id: user.role_id,
+            role: role,
+            puskesmas_id: user.puskesmas_id,
+            puskesmas: puskesmas.data.data
         }
 
         return payload(200, true, "User created", result, res)
@@ -123,7 +118,7 @@ export const logout = async (req, res) => {
         if (!token) {
             return payload(401, false, "Unauthorized", null, res)
         }
-        console.log(`token: ${token}`)
+
         jwt.verify(token, process.env.JWTPRIVATEKEY)
         res.setHeader('Authorization', null)
         return payload(200, true, "Logout success", null, res)
