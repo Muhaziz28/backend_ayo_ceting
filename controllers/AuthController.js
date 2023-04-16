@@ -158,6 +158,13 @@ export const login = async (req, res) => {
                 user: {
                     id: user.id,
                     username: user.username,
+                    name: user.name,
+                    location: {
+                        longitude: user.location.coordinates[0],
+                        latitude: user.location.coordinates[1],
+                    },
+                    address: user.address,
+                    phone_number: user.phone_number,
                     email: user.email,
                     role_id: user.role_id,
                     role: role,

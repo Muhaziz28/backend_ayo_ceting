@@ -4,22 +4,40 @@ import Pengajuan from "../models/PengajuanModel.js"
 import payload from "../response_format.js"
 import Users from "../models/UserModel.js"
 import jwt from "jsonwebtoken"
+import axios from "axios"
 
 export const getAllPengajuan = async (req, res) => {
     try {
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
+        const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
+        const user = await Users.findByPk(decoded.id)
+        if (!user) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
+
+        // const puskesmas = await axios.get(`http://103.141.74.123:81/api/v1/puskesmas/detail/${user.puskesmas_id}`)
+        // console.log(puskesmas.data.data)
+
         const pengajuan = await Pengajuan.findAll({
+            // where: Sequelize.where(
+            //     Sequelize.fn('ST_Distance_Sphere', Sequelize.col('lokasi'), Sequelize.fn('ST_GeomFromGeoJSON', JSON.stringify(puskesmas.data.data.lokasi))),
+            //     {
+            //         [Sequelize.Op.lte]: 1000
+            //     }
+            // ),
             include: [
                 {
-                    model: CategoryPengajuan,
-                    as: "category_pengajuan",
-                    attributes: ["category_name"],
+                    model: Users,
+                    attributes: ["id", "name", "phone_number"]
                 },
                 {
-                    model: Users,
-                    as: "user",
-                    attributes: ["name", "phone_number"]
+                    model: CategoryPengajuan,
+                    attributes: ["id", "category_name"]
                 }
-            ],
+            ]
         })
 
         const result = pengajuan.map((item) => {
