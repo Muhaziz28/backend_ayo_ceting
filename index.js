@@ -22,8 +22,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// app.use(Edukasi)
-
 app.use(RolesRoute)
 app.use(PuskesmasRoute)
 app.use(UserRoute)

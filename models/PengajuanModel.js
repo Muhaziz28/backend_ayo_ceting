@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize"
 import db from "../config/Database.js"
 import CategoryPengajuan from "./CategoryPengajuanModel.js"
-import Device from "./DeviceModel.js"
+import Users from "./UserModel.js"
 
 const { DataTypes } = Sequelize
 
@@ -13,16 +13,16 @@ const Pengajuan = db.define(
             primaryKey: true,
             autoIncrement: true,
         },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         isi_pengajuan: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true,
             }
-        },
-        device_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
         },
         category_pengajuan_id: {
             type: DataTypes.INTEGER,
@@ -52,7 +52,7 @@ const Pengajuan = db.define(
 CategoryPengajuan.hasMany(Pengajuan, { foreignKey: "category_pengajuan_id" })
 Pengajuan.belongsTo(CategoryPengajuan, { foreignKey: "category_pengajuan_id" })
 
-Device.hasMany(Pengajuan, { foreignKey: "device_id" })
-Pengajuan.belongsTo(Device, { foreignKey: "device_id" })
+Users.hasMany(Pengajuan, { foreignKey: "user_id" })
+Pengajuan.belongsTo(Users, { foreignKey: "user_id" })
 
 export default Pengajuan
