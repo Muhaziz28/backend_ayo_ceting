@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize"
 import db from "../config/Database.js"
 import Roles from "./RolesModel.js"
-import jwt from "jsonwebtoken"
 
 const { DataTypes } = Sequelize
 
@@ -20,6 +19,10 @@ const Users = db.define(
                 notEmpty: true
             }
         },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -29,10 +32,22 @@ const Users = db.define(
         },
         email: {
             type: DataTypes.STRING,
+            allowNull: true
+        },
+        phone_number: {
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 notEmpty: true
             }
+        },
+        location: {
+            type: DataTypes.GEOMETRY("POINT"),
+            allowNull: false,
+        },
+        address: {
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         role_id: {
             type: DataTypes.INTEGER,
@@ -41,9 +56,14 @@ const Users = db.define(
                 notEmpty: true
             }
         },
+        is_verified: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
         puskesmas_id: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         }
     },
     {

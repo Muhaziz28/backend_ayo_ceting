@@ -9,6 +9,7 @@ import AuthRoute from "./routes/AuthRoute.js"
 import CategoryPengjuanRoute from "./routes/CategoryPengajuanRoute.js"
 import PengajuanRoute from "./routes/PengajuanRoute.js"
 import EdukasiRoute from "./routes/EdukasiRoute.js"
+import DiskusiRoute from "./routes/DiskusiRoute.js"
 import { Sequelize } from "sequelize"
 
 dotenv.config();
@@ -22,8 +23,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// app.use(Edukasi)
-
+app.use(DiskusiRoute)
 app.use(RolesRoute)
 app.use(PuskesmasRoute)
 app.use(UserRoute)

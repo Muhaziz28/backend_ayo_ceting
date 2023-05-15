@@ -45,7 +45,34 @@ export const admin = async (req, res, next) => {
         }
 
         if (user.role.role_name !== "Administrator") {
+            return payload(401, false, "You are not authorized", null, res)
+        }
+        next()
+    } catch (err) {
+        return payload(500, false, err.message, null, res)
+    }
+}
+
+export const user = async (req, res, next) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1]
+        if (!token) {
             return payload(401, false, "Unauthorized", null, res)
+        }
+        const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
+        const user = await Users.findByPk(decoded.id, {
+            include: {
+                model: Roles,
+                attributes: ["role_name"]
+            }
+        })
+
+        if (!user) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
+
+        if (user.role.role_name !== "Umum") {
+            return payload(401, false, "You are not allowed", null, res)
         }
         next()
     } catch (err) {
