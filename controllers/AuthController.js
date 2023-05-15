@@ -6,6 +6,7 @@ import axios from "axios"
 import dotenv from "dotenv"
 import Roles from "../models/RolesModel.js"
 import { Sequelize } from "sequelize"
+import sendMail from "../helper/sendMail.js"
 dotenv.config()
 
 export const create_admin = async (req, res) => {
@@ -67,24 +68,16 @@ export const register = async (req, res) => {
         const { name, username, password, email, phone_number, location, address } = req.body
 
         const emailExist = await Users.findOne({
-            where: {
-                email: email
-            }
+            where: { email: email }
         })
 
-        if (emailExist) {
-            return payload(400, false, "Invalid username or password", null, res)
-        }
+        if (emailExist) return payload(400, false, "Invalid username or password", null, res)
 
         const usernameExist = await Users.findOne({
-            where: {
-                username: username
-            }
+            where: { username: username }
         })
 
-        if (usernameExist) {
-            return payload(400, false, "Invalid username or password", null, res)
-        }
+        if (usernameExist) return payload(400, false, "Invalid username or password", null, res)
 
         const salt = await bcrypt.genSalt(Number(10))
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -101,7 +94,47 @@ export const register = async (req, res) => {
             role_id: 1,
         })
 
-        return payload(200, true, "User created", null, res)
+        const token = jwt.sign({ email: email }, process.env.JWTPRIVATEKEY, { expiresIn: "1d" })
+        const activationLink = `http://localhost:5000/activate/` + token
+        const emailText = `Halo ${name}, silahkan klik link berikut untuk mengaktifkan akun anda: ${activationLink}`
+
+        sendMail(email, emailText)
+
+        return payload(200, true, "Registrasi berhasil, check email anda untuk aktifasi akun anda", null, res)
+    } catch (err) {
+        return payload(500, false, err.message, null, res)
+    }
+}
+
+export const activate = async (req, res) => {
+    try {
+        const { token } = req.params
+        const { email } = jwt.verify(token, process.env.JWTPRIVATEKEY)
+        await Users.update({
+            is_verified: true
+        }, {
+            where: { email: email }
+        })
+
+        return payload(200, true, "Akun anda berhasil diaktifasi", null, res)
+    } catch (err) {
+        return payload(500, false, err.message, null, res)
+    }
+}
+
+export const sendAcitvationLink = async (req, res) => {
+    const { email } = req.body
+    try {
+        const token = jwt.sign({ email: email }, process.env.JWTPRIVATEKEY, { expiresIn: "1d" })
+        const activationLink = `http://localhost:5000/activate/` + token
+        const user = await Users.findOne({
+            where: { email: email }
+        })
+        if (!user) return payload(400, false, "User not found", null, res)
+        const emailText = `Silahkan klik link berikut untuk mengaktifkan akun anda: ${activationLink}`
+
+        sendMail(email, emailText)
+        return payload(200, true, "Link aktivasi berhasil dikirim", null, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
     }
@@ -109,32 +142,22 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
-
+        const { username, password } = req.body
         let user
-        if (email.includes("@")) {
+        if (username.includes("@")) {
             user = await Users.findOne({
-                where: {
-                    email: email
-                }
+                where: { email: username }
             })
         } else {
             user = await Users.findOne({
-                where: {
-                    username: email
-                }
+                where: { username: username }
             })
         }
 
-        if (!user) {
-            return payload(400, false, "Invalid username or password", null, res)
-        }
+        if (!user) return payload(400, false, "Invalid username or password", null, res)
 
         const validPassword = await bcrypt.compare(password, user.password)
-
-        if (!validPassword) {
-            return payload(400, false, "Invalid username or password", null, res)
-        }
+        if (!validPassword) return payload(400, false, "Invalid username or password", null, res)
 
         if (user.puskesmas_id != null) {
             const puskesmas = await axios.get(`http://103.141.74.123:81/api/v1/puskesmas/detail/${user.puskesmas_id}`)
@@ -142,9 +165,7 @@ export const login = async (req, res) => {
         }
 
         const role = await Roles.findOne({
-            where: {
-                id: user.role_id
-            },
+            where: { id: user.role_id },
             attributes: ["id", "role_name"]
         })
 
@@ -171,7 +192,6 @@ export const login = async (req, res) => {
                 }
             },
             res)
-
     } catch (err) {
         return payload(500, false, err.message, null, res)
     }

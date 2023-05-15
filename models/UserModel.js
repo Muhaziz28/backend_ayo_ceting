@@ -1,7 +1,6 @@
 import { Sequelize } from "sequelize"
 import db from "../config/Database.js"
 import Roles from "./RolesModel.js"
-import jwt from "jsonwebtoken"
 
 const { DataTypes } = Sequelize
 
@@ -56,6 +55,11 @@ const Users = db.define(
             validate: {
                 notEmpty: true
             }
+        },
+        is_verified: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         },
         puskesmas_id: {
             type: DataTypes.STRING,

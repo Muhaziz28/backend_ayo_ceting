@@ -75,7 +75,7 @@ export const getPengajuan = async (req, res) => {
     if (!token) {
         return payload(401, false, "Unauthorized", null, res)
     }
-
+    console.log(`token: ${token}`)
     jwt.verify(token, process.env.JWTPRIVATEKEY, (err, decoded) => {
         if (err) {
             return payload(401, false, "Unauthorized", null, res)
@@ -85,10 +85,9 @@ export const getPengajuan = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
     const user = await Users.findByPk(decoded.id)
     try {
+        console.log(`user: ${user}`)
         const pengajuan = await Pengajuan.findAll({
-            where: {
-                user_id: user.id
-            },
+            where: { user_id: user.id },
             include: [
                 {
                     model: CategoryPengajuan,
@@ -192,8 +191,11 @@ export const approvePengajuan = async (req, res) => {
         if (pengajuan.status === "approved") {
             return payload(400, false, "Pengajuan sudah di approve", null, res)
         }
-        pengajuan.status = "approved"
-        await pengajuan.save()
+        pengajuan.update({
+            status: "approved",
+            discussion_status: true
+        })
+
         return payload(200, true, "Pengajuan berhasil di approve", pengajuan, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)

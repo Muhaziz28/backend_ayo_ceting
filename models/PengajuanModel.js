@@ -40,6 +40,10 @@ const Pengajuan = db.define(
             type: DataTypes.ENUM,
             values: ["pending", "approved", "rejected"],
             defaultValue: "pending",
+        },
+        discussion_status: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         }
     },
     {

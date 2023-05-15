@@ -12,8 +12,8 @@ router.put("/pengajuan/reject/:id", auth, admin, rejectPengajuan)
 router.get("/pengajuan/:id", auth, getPengajuanById)
 
 // * Routes pengajuan for user
-router.get("/pengajuan/user", auth, user, getPengajuan)
-router.post("/pengajuan/user", auth, user, createPengajuan)
+router.get("/pengajuan_user", auth, user, getPengajuan)
+router.post("/pengajuan_user", auth, user, createPengajuan)
 
 
 // router.delete("/pengajuan/:id", admin, deletePengajuan)
