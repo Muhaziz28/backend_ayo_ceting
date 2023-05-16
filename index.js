@@ -33,6 +33,9 @@ app.use(CategoryPengjuanRoute)
 app.use(PengajuanRoute)
 app.use(EdukasiRoute)
 app.use(VonisAwalRoute)
+app.use('/', (req, res) => {
+  res.send("Backend is running...")
+})
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`Server is running on port ${process.env.APP_PORT}...`)
