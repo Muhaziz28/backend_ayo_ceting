@@ -5,6 +5,7 @@ import payload from "../response_format.js"
 import Users from "../models/UserModel.js"
 import jwt from "jsonwebtoken"
 import axios from "axios"
+import VonisAwal from "../models/VonisAwalModel.js"
 
 export const getAllPengajuan = async (req, res) => {
     try {
@@ -36,35 +37,44 @@ export const getAllPengajuan = async (req, res) => {
                 {
                     model: CategoryPengajuan,
                     attributes: ["id", "category_name"]
-                }
-            ]
+                },
+            ],
+            order: [["created_at", "DESC"]],
         })
+        return payload(200, true, "Success", pengajuan, res)
+    } catch (err) {
+        return payload(500, false, err.message, null, res)
+    }
+}
 
-        const result = pengajuan.map((item) => {
-            const data = {
-                id: item.id,
-                user: {
-                    id: item.user_id,
-                    name: item.user.name,
-                    phone_number: item.user.phone_number
+export const getPengajuanByIdAdmin = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(" ")[1]
+        const id = req.params.id
+        if (!token) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
+        const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
+        const user = await Users.findByPk(decoded.id)
+        if (!user) {
+            return payload(401, false, "Unauthorized", null, res)
+        }
+
+        const pengajuan = await Pengajuan.findOne({
+            where: { id: id },
+            include: [
+                {
+                    model: Users,
+                    attributes: ["id", "name", "phone_number"]
                 },
-                category_id: item.category_id,
-                category: {
-                    id: item.category_pengajuan.id,
-                    category_name: item.category_pengajuan.category_name
+                {
+                    model: CategoryPengajuan,
+                    attributes: ["id", "category_name"]
                 },
-                isi_pengajuan: item.isi_pengajuan,
-                lokasi: {
-                    latitude: item.lokasi.coordinates[0],
-                    longitude: item.lokasi.coordinates[1]
-                },
-                status: item.status,
-                created_at: item.created_at,
-                updated_at: item.updated_at
-            }
-            return data
+            ],
+            order: [["created_at", "DESC"]],
         })
-        return payload(200, true, "Success", result, res)
+        return payload(200, true, "Success", pengajuan, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
     }
@@ -85,7 +95,6 @@ export const getPengajuan = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY)
     const user = await Users.findByPk(decoded.id)
     try {
-        console.log(`user: ${user}`)
         const pengajuan = await Pengajuan.findAll({
             where: { user_id: user.id },
             include: [
@@ -98,8 +107,13 @@ export const getPengajuan = async (req, res) => {
                     model: Users,
                     as: "user",
                     attributes: ["name"]
+                },
+                {
+                    model: VonisAwal,
+                    attributes: ["id", "vonis"]
                 }
             ],
+            order: [["created_at", "DESC"]],
         })
         return payload(200, true, "Success", pengajuan, res)
     } catch (err) {

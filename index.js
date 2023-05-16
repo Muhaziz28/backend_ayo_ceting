@@ -10,6 +10,7 @@ import CategoryPengjuanRoute from "./routes/CategoryPengajuanRoute.js"
 import PengajuanRoute from "./routes/PengajuanRoute.js"
 import EdukasiRoute from "./routes/EdukasiRoute.js"
 import DiskusiRoute from "./routes/DiskusiRoute.js"
+import VonisAwalRoute from "./routes/VonisAwalRoute.js"
 import { Sequelize } from "sequelize"
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(AuthRoute)
 app.use(CategoryPengjuanRoute)
 app.use(PengajuanRoute)
 app.use(EdukasiRoute)
+app.use(VonisAwalRoute)
 
 app.listen(process.env.APP_PORT, () => {
   console.log(`Server is running on port ${process.env.APP_PORT}...`)
