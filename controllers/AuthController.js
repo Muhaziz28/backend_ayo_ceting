@@ -131,7 +131,7 @@ export const sendAcitvationLink = async (req, res) => {
         if (!checkEmail) return payload(400, false, "Email not found", null, res)
 
         const token = jwt.sign({ email: email }, process.env.JWTPRIVATEKEY, { expiresIn: "1d" })
-        const activationLink = `http://localhost:5000/activate/` + token
+        const activationLink = `${process.env.BASE_URL}/activate/` + token
         const user = await Users.findOne({
             where: { email: email }
         })
