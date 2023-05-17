@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --exit"
+    "test": "mocha tests/*.js --exit"
   },
   "author": "Haikal",
   "license": "ISC",
