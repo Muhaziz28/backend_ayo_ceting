@@ -140,6 +140,9 @@ export const getPengajuanById = async (req, res) => {
                 }
             ]
         })
+        if (pengajuan === null) {
+            return payload(404, false, "Data tidak ditemukan", null, res)
+        }
         return payload(200, true, "Success", pengajuan, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
