@@ -38,9 +38,22 @@ export const getAllPengajuan = async (req, res) => {
                     model: CategoryPengajuan,
                     attributes: ["id", "category_name"]
                 },
+		    {
+                    model: VonisAwal,
+                    attributes: ["id", "vonis"]
+                }
             ],
             order: [["created_at", "DESC"]],
         })
+
+	for (let i = 0; i < pengajuan.length; i++) {
+            const lokasiFormat = {
+                latitude: pengajuan[i].lokasi.coordinates[0],
+                longitude: pengajuan[i].lokasi.coordinates[1]
+            }
+            pengajuan[i].lokasi = lokasiFormat
+        }
+
         return payload(200, true, "Success", pengajuan, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
@@ -115,6 +128,15 @@ export const getPengajuan = async (req, res) => {
             ],
             order: [["created_at", "DESC"]],
         })
+
+	for (let i = 0; i < pengajuan.length; i++) {
+            const lokasiFormat = {
+                latitude: pengajuan[i].lokasi.coordinates[0],
+                longitude: pengajuan[i].lokasi.coordinates[1]
+            }
+            pengajuan[i].lokasi = lokasiFormat
+        }
+
         return payload(200, true, "Success", pengajuan, res)
     } catch (err) {
         return payload(500, false, err.message, null, res)
@@ -137,6 +159,9 @@ export const getPengajuanById = async (req, res) => {
                     model: Users,
                     as: "user",
                     attributes: ["name", "phone_number"]
+                },{
+                    model: VonisAwal,
+                    attributes:["id", "vonis"]
                 }
             ]
         })

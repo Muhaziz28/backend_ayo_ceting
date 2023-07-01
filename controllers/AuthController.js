@@ -95,7 +95,7 @@ export const register = async (req, res) => {
         })
 
         const token = jwt.sign({ email: email }, process.env.JWTPRIVATEKEY, { expiresIn: "1d" })
-        const activationLink = `http://localhost:5000/activate/` + token
+        const activationLink = `http://103.141.74.123:5000/activate/` + token
         const emailText = `Halo ${name}, silahkan klik link berikut untuk mengaktifkan akun anda: ${activationLink}`
 
         sendMail(email, emailText)
@@ -129,9 +129,8 @@ export const sendAcitvationLink = async (req, res) => {
             where: { email: email }
         })
         if (!checkEmail) return payload(400, false, "Email not found", null, res)
-
         const token = jwt.sign({ email: email }, process.env.JWTPRIVATEKEY, { expiresIn: "1d" })
-        const activationLink = `${process.env.BASE_URL}/activate/` + token
+        const activationLink = `http://103.141.74.123:5000/activate/` + token
         const user = await Users.findOne({
             where: { email: email }
         })
@@ -174,7 +173,7 @@ export const login = async (req, res) => {
             attributes: ["id", "role_name"]
         })
 
-        const token = jwt.sign({ id: user.id }, process.env.JWTPRIVATEKEY)
+        const token = jwt.sign({ id: user.id, name: user.name, username: user.username }, process.env.JWTPRIVATEKEY)
         res.cookie('token', token, { httpOnly: true });
 
         return payload(
